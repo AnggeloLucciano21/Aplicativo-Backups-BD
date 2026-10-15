@@ -12,6 +12,7 @@ from connectors.sqlserver_connector import SQLServerConnector
 from connectors.postgresql_connector import PostgreSQLConnector
 from connectors.mariadb_connector import MariaDBConnector
 from connectors.mysql_connector import MySQLConnector
+from connectors.sybase_connector import SybaseConnector
 import builtins
 builtins.PostgreSQLConnector = PostgreSQLConnector  # expose for tests
 
@@ -62,6 +63,7 @@ class ConnectorFactory:
         "mysql": MySQLConnector,
         "postgresql": PostgreSQLConnector,
         "mariadb": MariaDBConnector,
+        "sybase": SybaseConnector,
     }
 
     _engine_metadata: Dict[str, Dict[str, Any]] = {
@@ -123,7 +125,7 @@ class ConnectorFactory:
             "requires_instance": False,
             "requires_credentials": True,
             "supports_windows_auth": False,
-            "status": "PENDING_BLOCK_6"
+            "status": "ACTIVE"
         },
         "oracle": {
             "name": "Oracle Database",
