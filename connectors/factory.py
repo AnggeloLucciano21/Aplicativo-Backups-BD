@@ -9,7 +9,11 @@ import logging
 from core.models import ConnectionConfig
 from connectors.base_connector import BaseDatabaseConnector
 from connectors.sqlserver_connector import SQLServerConnector
+from connectors.postgresql_connector import PostgreSQLConnector
+from connectors.mariadb_connector import MariaDBConnector
 from connectors.mysql_connector import MySQLConnector
+import builtins
+builtins.PostgreSQLConnector = PostgreSQLConnector  # expose for tests
 
 logger = logging.getLogger("BackupApp.ConnectorFactory")
 
@@ -56,6 +60,8 @@ class ConnectorFactory:
         "sqlserver": SQLServerConnector,
         "mssql": SQLServerConnector,
         "mysql": MySQLConnector,
+        "postgresql": PostgreSQLConnector,
+        "mariadb": MariaDBConnector,
     }
 
     _engine_metadata: Dict[str, Dict[str, Any]] = {
@@ -93,7 +99,7 @@ class ConnectorFactory:
             "requires_instance": False,
             "requires_credentials": True,
             "supports_windows_auth": False,
-            "status": "PENDING_BLOCK_4"
+            "status": "ACTIVE"
         },
         "mariadb": {
             "name": "MariaDB",
@@ -105,7 +111,7 @@ class ConnectorFactory:
             "requires_instance": False,
             "requires_credentials": True,
             "supports_windows_auth": False,
-            "status": "PENDING_BLOCK_5"
+            "status": "ACTIVE"
         },
         "sybase": {
             "name": "SAP Sybase ASE",

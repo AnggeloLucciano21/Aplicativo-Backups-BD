@@ -61,7 +61,12 @@ class TestBlock2Architecture(unittest.TestCase):
         self.assertIsInstance(mysql_conn, MySQLConnector)
 
         # Motores aún en desarrollo posterior
-        for eng in ["postgresql", "oracle", "sqlite", "sybase"]:
+        # PostgreSQL is now active, test it separately
+        pg_cfg = ConnectionConfig(name="postgresql_Test", engine="postgresql", host="localhost")
+        pg_connector = ConnectorFactory.create_connector(pg_cfg)
+        self.assertIsInstance(pg_connector, PostgreSQLConnector)
+        # Verify stub for remaining pending engines
+        for eng in ["oracle", "sqlite", "sybase"]:
             cfg = ConnectionConfig(name=f"{eng}_Test", engine=eng, host="localhost")
             connector = ConnectorFactory.create_connector(cfg)
             self.assertIsInstance(connector, PendingEngineStubConnector)

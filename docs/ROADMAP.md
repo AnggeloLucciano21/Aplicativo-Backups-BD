@@ -11,8 +11,8 @@ Este documento establece el plan de trabajo modular, el estado de avance por blo
 | **Bloque 1** | Análisis del proyecto actual, arquitectura y plan de cambios | **COMPLETADO** | 2026-10-15 | Inspección del entorno, detección de herramientas y definición del plan maestro. |
 | **Bloque 2** | Arquitectura común (Factoría de Conectores) y adaptación dinámica de la UI de conexiones | **COMPLETADO** | 2026-10-15 | Implementación de `ConnectorFactory`, desacoplamiento de motores y formulario adaptativo. 10/10 pruebas OK. |
 | **Bloque 3** | Implementación del motor **MySQL** y validación | **COMPLETADO** | 2026-10-15 | Conector `MySQLConnector`, detección de `mysqldump.exe` y `mysql.exe`, verificación y restauración. 16/16 pruebas OK. |
-| **Bloque 4** | Implementación del motor **PostgreSQL** y validación | *PENDIENTE* | — | Integración de `pg_dump` y conector `psycopg2` / CLI. |
-| **Bloque 5** | Implementación del motor **MariaDB** y validación | *PENDIENTE* | — | Compatibilidad con protocolo MySQL / MariaDB dump y binarios dedicados. |
+| **Bloque 4** | Implementación del motor **PostgreSQL** y validación | *EN PROGRESO* | — | Conector implementado, UI pendiente de integración completa. | |
+| **Bloque 5** | Implementación del motor **MariaDB** y validación | **COMPLETADO** | 2026-10-15 | Conector `MariaDBConnector` integrado, pruebas unitarias aprobadas (24/24). |
 | **Bloque 6** | Implementación del motor **SAP Sybase ASE** y requisitos | *PENDIENTE* | — | Evaluación de driver ODBC ASE, T-SQL de Sybase (`DUMP DATABASE`) o CLI `isql`. |
 | **Bloque 7** | Implementación de **Oracle Database** y **SQLite** | *PENDIENTE* | — | Oracle (`expdp`/`impdp`/`oracledb` sobre servicio ORCL local activo) y SQLite (API nativa `sqlite3.backup`). |
 | **Bloque 8** | Integración total con Historial, Scheduler, Verificación y Dashboard | *PENDIENTE* | — | Homogeneización de reportes, SHA-256 e integración con Windows Task Scheduler. |
