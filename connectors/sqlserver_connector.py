@@ -22,6 +22,17 @@ class SQLServerConnector(BaseDatabaseConnector):
     monitoreo de porcentaje de progreso en tiempo real mediante sys.dm_exec_requests
     y ejecución de comandos de mantenimiento con autocommit.
     """
+    engine_name: str = "sqlserver"
+    default_port: Optional[int] = 1433
+    default_file_extension: str = ".bak"
+    supported_backup_types: List[str] = ["FULL", "DIFFERENTIAL", "LOG"]
+
+    @classmethod
+    def check_prerequisites(cls) -> Tuple[bool, str]:
+        drivers = cls.get_available_drivers()
+        if not drivers:
+            return False, "No se detectaron controladores ODBC para SQL Server instalados (se requiere ODBC Driver 18 o 17)."
+        return True, f"Controladores disponibles: {', '.join(drivers)}"
 
     @staticmethod
     def get_available_drivers() -> List[str]:

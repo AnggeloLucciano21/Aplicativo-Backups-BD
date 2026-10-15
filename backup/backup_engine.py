@@ -14,7 +14,7 @@ from typing import Tuple, Dict, Any, Callable, Optional
 
 from core.models import ConnectionConfig, BackupTaskConfig, OperationRecord
 from database.repositories import HistoryRepository
-from connectors.sqlserver_connector import SQLServerConnector
+from connectors.factory import ConnectorFactory
 from security.credentials_manager import CredentialsManager
 from backup.integrity import IntegrityVerifier
 from backup.retention import StorageManager
@@ -98,10 +98,10 @@ class BackupEngine:
 
         # 2. Conectar al motor de base de datos
         password = None
-        if conn_config.auth_type.lower() == "sql":
+        if conn_config.auth_type.lower() != "windows" or conn_config.engine.lower() != "sqlserver":
             password = CredentialsManager.get_password(conn_config.name, conn_config.username)
 
-        connector = SQLServerConnector(conn_config, password=password)
+        connector = ConnectorFactory.create_connector(conn_config, password=password)
 
         if progress_callback:
             progress_callback(10, f"Iniciando copia de seguridad {backup_type} en '{database_name}'...")

@@ -13,9 +13,22 @@ class BaseDatabaseConnector(ABC):
     Permite desacoplar el motor subyacente de la interfaz y la lógica de negocio.
     """
 
+    engine_name: str = "base"
+    default_port: Optional[int] = 1433
+    default_file_extension: str = ".bak"
+    supported_backup_types: List[str] = ["FULL"]
+
     def __init__(self, config: ConnectionConfig, password: Optional[str] = None):
         self.config = config
         self.password = password
+
+    @classmethod
+    def check_prerequisites(cls) -> Tuple[bool, str]:
+        """
+        Comprueba si las herramientas o controladores externos necesarios
+        para este motor están instalados en el sistema operativo.
+        """
+        return True, "Prerrequisitos disponibles."
 
     @abstractmethod
     def test_connection(self) -> Tuple[bool, str, Dict[str, Any]]:

@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any, List
 from PySide6.QtCore import QThread, Signal
 
 from core.models import ConnectionConfig
-from connectors.sqlserver_connector import SQLServerConnector
+from connectors.factory import ConnectorFactory
 from security.credentials_manager import CredentialsManager
 
 
@@ -22,10 +22,10 @@ class ConnectionTestWorker(QThread):
 
     def run(self):
         pwd = self.password
-        if pwd is None and self.config.auth_type.lower() == "sql":
+        if pwd is None and (self.config.auth_type.lower() != "windows" or self.config.engine.lower() != "sqlserver"):
             pwd = CredentialsManager.get_password(self.config.name, self.config.username)
 
-        connector = SQLServerConnector(self.config, password=pwd)
+        connector = ConnectorFactory.create_connector(self.config, password=pwd)
         success, msg, details = connector.test_connection()
         self.result_ready.emit(success, msg, details)
 
@@ -40,10 +40,10 @@ class LoadDatabasesWorker(QThread):
 
     def run(self):
         pwd = None
-        if self.config.auth_type.lower() == "sql":
+        if self.config.auth_type.lower() != "windows" or self.config.engine.lower() != "sqlserver":
             pwd = CredentialsManager.get_password(self.config.name, self.config.username)
 
-        connector = SQLServerConnector(self.config, password=pwd)
+        connector = ConnectorFactory.create_connector(self.config, password=pwd)
         try:
             dbs = connector.list_databases()
             if dbs:

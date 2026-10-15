@@ -45,12 +45,14 @@ class ConnectionRepository:
                 cursor.execute("""
                     INSERT INTO connections (
                         name, engine, host, port, instance, database, auth_type,
-                        username, odbc_driver, trust_server_certificate, encrypt, timeout,
+                        username, odbc_driver, service_name, sqlite_path,
+                        trust_server_certificate, encrypt, timeout,
                         created_at, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """, (
                     config.name, config.engine, config.host, config.port, config.instance,
                     config.database, config.auth_type, config.username, config.odbc_driver,
+                    config.service_name, config.sqlite_path,
                     1 if config.trust_server_certificate else 0,
                     1 if config.encrypt else 0,
                     config.timeout, config.created_at, config.updated_at
@@ -61,12 +63,14 @@ class ConnectionRepository:
                     UPDATE connections SET
                         name = ?, engine = ?, host = ?, port = ?, instance = ?,
                         database = ?, auth_type = ?, username = ?, odbc_driver = ?,
+                        service_name = ?, sqlite_path = ?,
                         trust_server_certificate = ?, encrypt = ?, timeout = ?,
                         updated_at = ?
                     WHERE id = ?;
                 """, (
                     config.name, config.engine, config.host, config.port, config.instance,
                     config.database, config.auth_type, config.username, config.odbc_driver,
+                    config.service_name, config.sqlite_path,
                     1 if config.trust_server_certificate else 0,
                     1 if config.encrypt else 0,
                     config.timeout, config.updated_at, config.id
@@ -83,17 +87,25 @@ class ConnectionRepository:
 
     @staticmethod
     def _row_to_model(row) -> ConnectionConfig:
+        # Usar verificación defensiva de keys por si la fila proviene de un schema anterior
+        keys = row.keys() if hasattr(row, 'keys') else []
+        service_name = row["service_name"] if "service_name" in keys else ""
+        sqlite_path = row["sqlite_path"] if "sqlite_path" in keys else ""
+        port_val = None if row["engine"] == "sqlite" else row["port"]
+
         return ConnectionConfig(
             id=row["id"],
             name=row["name"],
             engine=row["engine"],
             host=row["host"],
-            port=row["port"],
+            port=port_val,
             instance=row["instance"] or "",
             database=row["database"] or "master",
             auth_type=row["auth_type"],
             username=row["username"] or "",
             odbc_driver=row["odbc_driver"] or "ODBC Driver 18 for SQL Server",
+            service_name=service_name or "",
+            sqlite_path=sqlite_path or "",
             trust_server_certificate=bool(row["trust_server_certificate"]),
             encrypt=bool(row["encrypt"]),
             timeout=row["timeout"] or 15,

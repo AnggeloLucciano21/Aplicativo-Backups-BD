@@ -20,11 +20,30 @@ class ConnectionConfig:
     auth_type: str = "windows"  # 'windows' (SSPI) o 'sql' (SQL Server Authentication)
     username: str = ""
     odbc_driver: str = "ODBC Driver 18 for SQL Server"
+    service_name: str = ""   # Para Oracle (ej. ORCL, XEPDB1)
+    sqlite_path: str = ""    # Para SQLite (ej. C:\data\db.sqlite)
     trust_server_certificate: bool = True
     encrypt: bool = False
     timeout: int = 15
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    @staticmethod
+    def get_default_port_for_engine(engine: str) -> Optional[int]:
+        eng = engine.lower()
+        if eng in ["sqlserver", "mssql"]:
+            return 1433
+        elif eng in ["mysql", "mariadb"]:
+            return 3306
+        elif eng in ["postgresql", "postgres"]:
+            return 5432
+        elif eng == "oracle":
+            return 1521
+        elif eng in ["sybase", "ase"]:
+            return 5000
+        elif eng == "sqlite":
+            return None
+        return 1433
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -38,6 +57,8 @@ class ConnectionConfig:
             "auth_type": self.auth_type,
             "username": self.username,
             "odbc_driver": self.odbc_driver,
+            "service_name": self.service_name,
+            "sqlite_path": self.sqlite_path,
             "trust_server_certificate": self.trust_server_certificate,
             "encrypt": self.encrypt,
             "timeout": self.timeout,

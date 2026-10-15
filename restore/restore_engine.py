@@ -13,7 +13,7 @@ from typing import Tuple, Dict, Any, Callable, Optional, List
 
 from core.models import ConnectionConfig, OperationRecord
 from database.repositories import HistoryRepository
-from connectors.sqlserver_connector import SQLServerConnector
+from connectors.factory import ConnectorFactory
 from security.credentials_manager import CredentialsManager
 
 logger = logging.getLogger("BackupApp.RestoreEngine")
@@ -32,10 +32,10 @@ class RestoreEngine:
         Inspecciona el archivo de backup sin alterarlo, extrayendo cabeceras y archivos lógicos.
         """
         password = None
-        if conn_config.auth_type.lower() == "sql":
+        if conn_config.auth_type.lower() != "windows" or conn_config.engine.lower() != "sqlserver":
             password = CredentialsManager.get_password(conn_config.name, conn_config.username)
 
-        connector = SQLServerConnector(conn_config, password=password)
+        connector = ConnectorFactory.create_connector(conn_config, password=password)
 
         headers = connector.get_backup_headers(backup_path)
         if "error" in headers:
@@ -86,10 +86,10 @@ class RestoreEngine:
             pass
 
         password = None
-        if conn_config.auth_type.lower() == "sql":
+        if conn_config.auth_type.lower() != "windows" or conn_config.engine.lower() != "sqlserver":
             password = CredentialsManager.get_password(conn_config.name, conn_config.username)
 
-        connector = SQLServerConnector(conn_config, password=password)
+        connector = ConnectorFactory.create_connector(conn_config, password=password)
 
         if progress_callback:
             progress_callback(15, f"Iniciando proceso de restauración hacia [{target_database}]...")

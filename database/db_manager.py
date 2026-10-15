@@ -78,6 +78,8 @@ class DatabaseManager:
                 auth_type TEXT NOT NULL DEFAULT 'windows',
                 username TEXT DEFAULT '',
                 odbc_driver TEXT DEFAULT 'ODBC Driver 18 for SQL Server',
+                service_name TEXT DEFAULT '',
+                sqlite_path TEXT DEFAULT '',
                 trust_server_certificate INTEGER DEFAULT 1,
                 encrypt INTEGER DEFAULT 0,
                 timeout INTEGER DEFAULT 15,
@@ -85,6 +87,13 @@ class DatabaseManager:
                 updated_at TEXT NOT NULL
             );
             """)
+
+            # Migración defensiva en caso de base de datos existente
+            for col_def in [("service_name", "TEXT DEFAULT ''"), ("sqlite_path", "TEXT DEFAULT ''")]:
+                try:
+                    cursor.execute(f"ALTER TABLE connections ADD COLUMN {col_def[0]} {col_def[1]};")
+                except sqlite3.OperationalError:
+                    pass
 
             # Tabla de Tareas de Backup (Programadas o Perfiles)
             cursor.execute("""
