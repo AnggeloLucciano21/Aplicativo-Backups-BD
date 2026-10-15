@@ -9,6 +9,7 @@ import logging
 from core.models import ConnectionConfig
 from connectors.base_connector import BaseDatabaseConnector
 from connectors.sqlserver_connector import SQLServerConnector
+from connectors.mysql_connector import MySQLConnector
 
 logger = logging.getLogger("BackupApp.ConnectorFactory")
 
@@ -54,6 +55,7 @@ class ConnectorFactory:
     _registry: Dict[str, Type[BaseDatabaseConnector]] = {
         "sqlserver": SQLServerConnector,
         "mssql": SQLServerConnector,
+        "mysql": MySQLConnector,
     }
 
     _engine_metadata: Dict[str, Dict[str, Any]] = {
@@ -79,7 +81,7 @@ class ConnectorFactory:
             "requires_instance": False,
             "requires_credentials": True,
             "supports_windows_auth": False,
-            "status": "PENDING_BLOCK_3"
+            "status": "ACTIVE"
         },
         "postgresql": {
             "name": "PostgreSQL",

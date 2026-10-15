@@ -184,7 +184,7 @@ class RestoreView(QWidget):
     def browse_backup_file(self):
         file, _ = QFileDialog.getOpenFileName(
             self, "Seleccionar Archivo de Respaldo", "C:\\SQL_Backups",
-            "Archivos de Respaldo SQL (*.bak *.diff *.trn);;Todos los archivos (*.*)"
+            "Todos los Respaldos (*.bak *.sql *.sql.gz *.dmp *.db *.trn *.diff);;Volcados MySQL/PostgreSQL (*.sql *.sql.gz);;Respaldos SQL Server (*.bak *.trn *.diff);;Data Pump Oracle (*.dmp);;Bases SQLite (*.db *.sqlite);;Todos los archivos (*.*)"
         )
         if file:
             self.txt_file.setText(file)

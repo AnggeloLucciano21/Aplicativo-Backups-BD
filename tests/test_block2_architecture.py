@@ -21,6 +21,7 @@ from database.db_manager import DatabaseManager
 from database.repositories import ConnectionRepository
 from connectors.factory import ConnectorFactory, PendingEngineStubConnector
 from connectors.sqlserver_connector import SQLServerConnector
+from connectors.mysql_connector import MySQLConnector
 from ui.views.connections_view import ConnectionsView
 
 
@@ -53,8 +54,14 @@ class TestBlock2Architecture(unittest.TestCase):
         self.assertEqual(connector.default_port, 1433)
 
     def test_factory_pending_engines_safe_stub(self):
-        """Verifica que los motores en desarrollo devuelvan un stub seguro con mensaje claro."""
-        for eng in ["mysql", "postgresql", "oracle", "sqlite", "sybase"]:
+        """Verifica que los motores en desarrollo devuelvan un stub seguro con mensaje claro y los activos su conector."""
+        # MySQL ya está activo (Bloque 3)
+        mysql_cfg = ConnectionConfig(name="mysql_Test", engine="mysql", host="localhost")
+        mysql_conn = ConnectorFactory.create_connector(mysql_cfg)
+        self.assertIsInstance(mysql_conn, MySQLConnector)
+
+        # Motores aún en desarrollo posterior
+        for eng in ["postgresql", "oracle", "sqlite", "sybase"]:
             cfg = ConnectionConfig(name=f"{eng}_Test", engine=eng, host="localhost")
             connector = ConnectorFactory.create_connector(cfg)
             self.assertIsInstance(connector, PendingEngineStubConnector)

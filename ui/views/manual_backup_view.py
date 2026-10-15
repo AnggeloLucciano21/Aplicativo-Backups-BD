@@ -174,6 +174,12 @@ class ManualBackupView(QWidget):
         if not config:
             return
 
+        # Adaptar patrón de archivo según extensión recomendada del motor
+        from connectors.factory import ConnectorFactory
+        meta = ConnectorFactory.get_engine_metadata(config.engine)
+        ext = meta.get("default_extension", ".bak")
+        self.txt_pattern.setText(f"{{db}}_{{type}}_{{date}}_{{time}}{ext}")
+
         self.combo_db.clear()
         self.combo_db.addItem("Cargando bases de datos...", None)
         self.combo_db.setEnabled(False)
@@ -188,8 +194,13 @@ class ManualBackupView(QWidget):
         if success and dbs:
             self.combo_db.addItems(dbs)
         else:
-            self.combo_db.addItem("master")
-            self.log_message(f"Advertencia al listar bases de datos: {err}")
+            conn_id = self.combo_conn.currentData()
+            config = self.conn_repo.get_by_id(conn_id) if conn_id else None
+            fallback_db = config.database if config and config.database else ("master" if config and config.engine == "sqlserver" else "")
+            if fallback_db:
+                self.combo_db.addItem(fallback_db)
+            if err:
+                self.log_message(f"Aviso al listar bases de datos: {err}")
 
     def browse_destination(self):
         folder = QFileDialog.getExistingDirectory(self, "Seleccionar Carpeta de Destino de Respaldos", self.txt_dest.text())
